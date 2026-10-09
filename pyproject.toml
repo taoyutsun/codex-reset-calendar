@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex-reset-calendar"
+version = "0.1.0"
+description = "Read Codex reset-credit expiry times and create calendar reminders without model turns"
+readme = "README.en.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Codex Reset Calendar contributors"}]
+dependencies = ["tzdata>=2024.1"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+]
+
+[project.optional-dependencies]
+test = ["icalendar>=6,<8", "build>=1,<2", "PyYAML>=6,<7"]
+
+[project.scripts]
+codex-reset-calendar = "codex_reset_calendar.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,8 @@
+include README.md README.en.md LICENSE
+include .gitignore .gitattributes
+recursive-include .github *.yml
+recursive-include scripts *.ps1
+recursive-include docs *.md
+recursive-include examples *.json
+recursive-include skills *.md *.template
+recursive-include tests *.py

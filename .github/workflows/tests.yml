@@ -1,0 +1,39 @@
+name: Offline Windows checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m venv .venv
+      - run: .\.venv\Scripts\python.exe -m pip install ".[test]"
+      - run: .\.venv\Scripts\python.exe -m unittest discover -s tests -v
+      - shell: pwsh
+        run: |
+          $files = Get-ChildItem scripts -Filter *.ps1
+          foreach ($file in $files) {
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$parseErrors) | Out-Null
+            if ($parseErrors) { throw ($parseErrors | Out-String) }
+          }
+      - run: .\.venv\Scripts\python.exe -m build
+      - shell: pwsh
+        run: |
+          python -m venv "$env:RUNNER_TEMP\crc-smoke"
+          $smokePython = "$env:RUNNER_TEMP\crc-smoke\Scripts\python.exe"
+          $wheel = (Get-ChildItem dist -Filter *.whl).FullName
+          & $smokePython -m pip install $wheel
+          if ($LASTEXITCODE -ne 0) { throw 'Clean wheel installation failed' }
+          Set-Location $env:RUNNER_TEMP
+          & $smokePython -I -m codex_reset_calendar --help
+          if ($LASTEXITCODE -ne 0) { throw 'Independent wheel smoke test failed' }

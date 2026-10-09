@@ -1,0 +1,22 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)][ValidateSet('query','export-ics','preview','sync','status','doctor')][string]$Mode,
+    [ValidatePattern('^[a-f0-9]{32}$')][string]$ConfirmPreview,
+    [string]$Output
+)
+$ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+$OutputEncoding = [Text.UTF8Encoding]::new($false)
+$taskPython = '__PYTHON__'
+$taskState = '__STATE__'
+$taskArgs = @('-B','-m','codex_reset_calendar','--state-dir',$taskState,$Mode,'--format','json')
+if ($Mode -eq 'sync') {
+    if (-not $ConfirmPreview) { throw 'Preview and explicit confirmation are required.' }
+    $taskArgs += @('--confirm-preview',$ConfirmPreview)
+}
+if ($Mode -eq 'export-ics') {
+    if (-not $Output) { throw 'An explicit output path is required.' }
+    $taskArgs += @('--output',$Output)
+}
+& $taskPython @taskArgs
+exit $LASTEXITCODE

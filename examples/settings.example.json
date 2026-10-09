@@ -1,0 +1,7 @@
+{
+  "_note": "Fictional settings reference only. Use init to generate a verified configuration; do not copy this file into runtime state.",
+  "codexEmail": "codex-user@example.com",
+  "calendarEmail": "calendar-user@example.com",
+  "calendarId": "primary",
+  "timeZone": "Asia/Taipei"
+}
